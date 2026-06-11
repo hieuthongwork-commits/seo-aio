@@ -110,7 +110,7 @@
 </div>
 
 <script>
-    async function analyzeContent() {
+    function analyzeContent() {
         const keyword = document.getElementById('keyword').value;
         const text = document.getElementById('content').value;
 
@@ -119,19 +119,34 @@
             return;
         }
 
-        const response = await fetch('/api/analyze', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ keyword, text })
-        });
+        const wordCount = text.trim().split(/\s+/).length;
+        let aeoScore = 50;
 
-        const data = await response.json();
+        if (wordCount > 50) {
+            aeoScore += 20;
+        }
+        if (keyword && text.toLowerCase().includes(keyword.toLowerCase())) {
+            aeoScore += 30;
+        }
 
-        document.getElementById('score').innerText = data.aeoScore;
-        document.getElementById('entities').innerText = data.entities.join(', ');
-        document.getElementById('schema').innerText = data.schemaSnippet;
+        const entities = [keyword, "Công nghệ sấy đông khô (Freeze-Dried)", "Nông sản hữu cơ", "USDA Organic"];
+
+        const schema = `{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [{
+    "@type": "Question",
+    "name": "Sản phẩm \${keyword || 'Vinamit'} có ưu điểm gì nổi bật?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "\${text.substring(0, 150)}... Áp dụng tiêu chuẩn công nghệ cao giữ trọn dinh dưỡng tự nhiên."
+    }
+  }]
+}`;
+
+        document.getElementById('score').innerText = aeoScore;
+        document.getElementById('entities').innerText = entities.filter(Boolean).join(', ');
+        document.getElementById('schema').innerText = schema;
         
         document.getElementById('result-card').style.display = 'block';
     }
