@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenAI Prompt Matrix - AEO System</title>
+    <style>
+        :root {
+            --bg: #09090b;
+            --card: #18181b;
+            --text: #fafafa;
+            --primary: #10b981;
+            --border: #27272a;
+        }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+        h1 { color: var(--primary); text-align: center; font-size: 2rem;}
+        p.subtitle { text-align: center; color: #a1a1aa; margin-bottom: 2rem; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+        input {
+            width: 100%; padding: 0.8rem; background: var(--bg); 
+            border: 1px solid var(--border); color: var(--text); 
+            border-radius: 8px; box-sizing: border-box;
+        }
+        button {
+            width: 100%; padding: 1rem; background: var(--primary);
+            color: #000; font-weight: bold; border: none; border-radius: 8px;
+            cursor: pointer; font-size: 1.1rem; transition: opacity 0.2s;
+        }
+        button:hover { opacity: 0.8; }
+        .prompt-card {
+            background: var(--card); border: 1px solid var(--border);
+            padding: 1.5rem; border-radius: 12px; margin-top: 1.5rem; display: none;
+        }
+        .prompt-card h3 { margin-top: 0; color: var(--primary); display: flex; justify-content: space-between;}
+        .copy-btn {
+            background: #27272a; color: white; border: none; padding: 5px 10px;
+            border-radius: 4px; cursor: pointer; font-size: 0.8rem;
+        }
+        pre {
+            background: var(--bg); padding: 1rem; border-radius: 8px;
+            white-space: pre-wrap; word-wrap: break-word; color: #a1a1aa; line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>GenAI Prompt Matrix</h1>
+    <p class="subtitle">Hệ thống tạo sinh Prompt cấu trúc cao dành cho Content AEO</p>
+
+    <div class="prompt-card" style="display: block;">
+        <div class="grid">
+            <div>
+                <label>Target Entity (Thực thể mục tiêu):</label>
+                <input type="text" id="entity" placeholder="VD: Mít sấy chân không Vinamit">
+            </div>
+            <div>
+                <label>Core Value (Giá trị cốt lõi / USP):</label>
+                <input type="text" id="usp" placeholder="VD: 100% Organic, không đường hóa học">
+            </div>
+        </div>
+        <button onclick="generatePrompts()">Tạo sinh Master Prompts</button>
+    </div>
+
+    <div class="prompt-card" id="card-1">
+        <h3>1. Lệnh tạo Content chuẩn AEO (Direct Answer) <button class="copy-btn" onclick="copyText('prompt1')">Copy</button></h3>
+        <pre id="prompt1"></pre>
+    </div>
+
+    <div class="prompt-card" id="card-2">
+        <h3>2. Lệnh tạo Information Gain (Góc nhìn độc bản) <button class="copy-btn" onclick="copyText('prompt2')">Copy</button></h3>
+        <pre id="prompt2"></pre>
+    </div>
+
+</div>
+
+<script>
+    function generatePrompts() {
+        const entity = document.getElementById('entity').value || "[Tên Sản Phẩm]";
+        const usp = document.getElementById('usp').value || "[Giá trị cốt lõi]";
+
+        const prompt1 = `Đóng vai một chuyên gia SEO thế hệ mới (AEO - Answer Engine Optimization). Hãy viết một đoạn định nghĩa trực diện (Direct Answer) dài đúng 50-60 từ về thực thể "${entity}". 
+
+Yêu cầu bắt buộc:
+1. Câu đầu tiên phải định nghĩa chính xác "${entity}" là gì.
+2. Phải tích hợp tự nhiên giá trị cốt lõi: "${usp}".
+3. Không sử dụng từ ngữ sáo rỗng (như "tuyệt vời", "hoàn hảo"). Dùng ngôn ngữ dữ liệu và khách quan.
+4. Đầu ra phải dễ dàng để các LLM như Perplexity hoặc Google SGE trích dẫn làm nguồn.`;
+
+        const prompt2 = `Dựa trên sản phẩm "${entity}" với ưu điểm "${usp}", hãy tạo ra 3 góc nhìn thông tin gia tăng (Information Gain) mà 10 bài viết top đầu Google hiện nay chưa khai thác. 
+
+Ví dụ: Thay vì nói về "cách ăn", hãy phân tích "tác động sinh hóa học của công nghệ sấy chân không đến lượng calo". 
+Yêu cầu: Chỉ cung cấp các ý tưởng có thể chứng minh bằng số liệu hoặc báo cáo khoa học để tăng điểm E-E-A-T.`;
+
+        document.getElementById('prompt1').innerText = prompt1;
+        document.getElementById('prompt2').innerText = prompt2;
+
+        document.getElementById('card-1').style.display = 'block';
+        document.getElementById('card-2').style.display = 'block';
+    }
+
+    function copyText(elementId) {
+        const text = document.getElementById(elementId).innerText;
+        navigator.clipboard.writeText(text);
+        alert("Đã copy Prompt!");
+    }
+</script>
+
+</body>
+</html>
